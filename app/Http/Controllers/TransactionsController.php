@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Products;
+use App\Models\Transactions;
+
+class TransactionsController extends BaseController
+{
+    public function index()
+    {
+        $products = Products::all();
+        return view('transactions.index', ['products' => $products]);
+    }
+
+    public function store(Request $request)
+    {
+        // Create the transaction
+        $transaction = Transactions::create([
+            'receipt_number' => $request->input('receipt_number'),
+            'transaction_date' => $request->input('transaction_date'),
+            'total_price' => $request->input('total_price'),
+            'user_id' => auth()->id(), // Assuming the user is authenticated
+        ]);
+
+        // Insert transaction details
+        foreach ($request->input('items') as $product) {
+            $transaction->details()->create([
+                'product_id' => $product['product_id'],
+                'qty' => $product['qty'],
+                'unit_price' => $product['unit_price'],
+                'subtotal' => $product['qty'] * $product['unit_price'],
+            ]);
+        }
+
+        // Update stock in the products table
+        foreach ($request->input('items') as $product) {
+            $productModel = Products::find($product['product_id']);
+            if ($productModel) {
+                $productModel->stock -= $product['qty'];
+                $productModel->save();
+            }
+        }
+
+        return response()->json(['status' => true]);
+    }
+}
