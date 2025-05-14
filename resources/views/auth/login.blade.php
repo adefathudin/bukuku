@@ -58,9 +58,6 @@
                 Login
             </button>
         </form>
-        <p class="mt-4 text-sm text-center text-gray-600">
-            Don't have an account? <a href="/register" class="text-blue-600 hover:underline">Register</a>
-        </p>
     </div>
 </body>
 

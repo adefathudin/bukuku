@@ -1,6 +1,6 @@
-<div class="flex flex-col bg-blue-gray-50 h-full w-full py-1">
-    <div class="flex px-2 flex-row relative">
-        <div class="absolute left-5 top-1 px-2 py-1">
+<div class="flex flex-col bg-blue-gray-50 h-full w-full">
+    <div class="flex flex-row relative">
+        <div class="absolute left-2 top-1 px-2 py-1">
             <i class="fas fa-search"></i>
         </div>
         <input type="text"
@@ -8,7 +8,7 @@
             placeholder="Cari produk..." x-model="keyword" />
     </div>
     <div class="h-full overflow-hidden mt-2">
-        <div class="h-full overflow-y-auto px-2">
+        <div class="h-full overflow-y-auto">
             <div class="select-none bg-blue-gray-100 flex flex-wrap content-center justify-center h-full opacity-25"
                 x-show="products.length === 0">
                 <div class="w-full text-center">

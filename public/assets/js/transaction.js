@@ -113,7 +113,7 @@ function initApp() {
     },
 
     async getProducts() {
-      const response = await fetch('http://localhost:8000/api/products');
+      const response = await fetch('http://localhost:8000/api/products-transaction');
       const data = await response.json();
       this.products = data;
     },

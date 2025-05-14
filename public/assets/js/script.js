@@ -2,6 +2,11 @@ function reloadDataTable(e) {
     $('#' + e).DataTable().ajax.reload();
 }
 
+function filterDataTable(e, p) {
+    var table = $('#' + e).DataTable();
+    table.column(5).search('food').draw();
+}
+
 function openModal(e) {
     document.getElementById(e).classList.remove('hidden');
 }

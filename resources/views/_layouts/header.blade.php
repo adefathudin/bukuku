@@ -25,3 +25,5 @@
 
 <body class="bg-blue-gray-50">
     <div class="flex flex-row h-screen antialiased text-blue-gray-800">
+        @include('_layouts.leftbar')
+        <div class="w-full p-2 ml-12">

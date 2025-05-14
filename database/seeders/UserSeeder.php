@@ -14,13 +14,9 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'role' => 'admin',
-            'password' => Hash::make('password'),
+        \DB::table('users')->insert([
+            ['name' => 'Admin', 'email' => 'admin@pos.com', 'role' => 'admin', 'password' => Hash::make('admin123')],
+            ['name' => 'Kasir', 'email' => 'kasir@pos.com', 'role' => 'kasir', 'password' => Hash::make('kasir123')]
         ]);
-
-        // Tambahkan user lainnya jika perlu
     }
 }

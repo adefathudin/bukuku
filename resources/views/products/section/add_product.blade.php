@@ -1,9 +1,4 @@
-<div class="flex justify-between items-center mb-4">
-    <button onclick="openModal('modalAddProduct')" class="bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600">
-        Tambah Produk
-    </button>
-</div>
-<div id="modalAddProduct" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+<div id="modalAddProduct" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black">
     <div class="relative p-4 w-full max-w-md max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
@@ -47,8 +42,6 @@
                     <input type="number" name="stock"
                         class="mt-1 w-full rounded-md focus:ring-cyan-500 focus:border-cyan-500">
                 </div>
-
-                <!-- Gambar Upload -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Gambar Produk</label>
                     <input type="file" name="image" id="gambarInput" accept="image/*" class="mt-1 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4

@@ -1,62 +1,101 @@
-<link rel="stylesheet" href="{{ asset('/assets/css/dataTables.tailwindcss.css') }}">
-<script src="{{ asset('/assets/js/jquery.js') }}"></script>
-<script src="{{ asset('/assets/js/dataTables.js') }}"></script>
-<script src="{{ asset('/assets/js/dataTables.tailwindcss.js') }}"></script>
+<div x-data="$store.datatableListProduct" x-init="$store.datatableListProduct.loadData()">
+    <div class="flex justify-between mb-2">
+        <div class="flex items-center gap-2">
+            <span class="w-full">Filter by:</span>
+            <select
+                class="bg-gray-50 cursor-pointer border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                x-on:change="setCategory($event.target.options[$event.target.selectedIndex].text, $event.target.value)">
+                <option value="" selected>- All Category -</option>
+                <template x-for="category in categories" :key="category.id">
+                    <option x-bind:value="category.id" x-text="category.name"></option>
+                </template>
+            </select>
+            <select x-show="subCategories.length > 0"
+                class="bg-gray-50 cursor-pointer border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                x-on:change="setSubCategory($event.target.value)">
+                <option value="" selected>- All Sub Category -</option>
+                <template x-for="sub in subCategories" :key="sub.id">
+                    <option x-bind:value="sub.name" x-text="sub.name"></option>
+                </template>
+            </select>
 
-<table id="productTable" class="table-auto w-full border-collapse border border-gray-300">
-    <thead>
-        <tr class="bg-gray-100">
-            <th class="border border-gray-300 px-4 py-2 w-5">#</th>
-            <th class="border border-gray-300 px-4 py-2 w-5">ID</th>
-            <th class="border border-gray-300 px-4 py-2 w-50">Nama Produk</th>
-            <th class="border border-gray-300 px-4 py-2 w-15">Harga</th>
-            <th class="border border-gray-300 px-4 py-2 w-13">Stok</th>
-            <th class="border border-gray-300 px-4 py-2 w-12">Image</th>
-        </tr>
-    </thead>
-</table>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" onclick="openModal('modalAddProduct')"
+                class="text-gray-900 bg-white cursor-pointer hover:bg-gray-100 border border-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-sm text-sm px-2 text-center inline-flex items-center">Add
+                new
+            </button>
+            <button type="button" x-on:click="setFilterStockOut()" :disabled="stockOutCount == 0"
+                :class="isStockOut ? 'text-red-500 bg-cyan-100' : ''"
+                class="text-gray-900 bg-white cursor-pointer hover:bg-gray-100 border border-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-sm text-sm px-2 text-center inline-flex items-center"
+                x-text="`Stock Out ${stockOutCount} items`">
+            </button>
+        </div>
+    </div>
+    <div class="py-2 bg-white overflow-auto">
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left border border-gray-200">
+                <thead class="bg-gray-50 sticky top-0 z-10">
+                    <tr class="text-gray-700">
+                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('id')">ID</th>
+                        <th class=" px-4 py-2 cursor-pointer" @click="sortBy('name')">Product Name</th>
+                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('price')">Price</th>
+                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('stock')">Stock</th>
+                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('category_name')">Category</th>
+                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('sub_category_name')">Subcategory</th>
+                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('price')">Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="row in rows" :key="row.id">
+                        <tr class="hover:bg-gray-200 hover:cursor-pointer odd:bg-white even:bg-gray-100"
+                            @click="$store.productModal.open(row.id)">
+                            <td class="px-4 py-2" x-text="row.id"></td>
+                            <td class="px-4 py-2" x-text="row.name"></td>
+                            <td class="px-4 py-2" x-text="numberWithCommas(row.price)"></td>
+                            <td class="px-4 py-2" x-text="row.stock"></td>
+                            <td class="px-4 py-2" x-text="row.category_name"></td>
+                            <td class="px-4 py-2" x-text="row.sub_category_name"></td>
+                            <td class="px-4 py-2"></td>
+                        </tr>
+                    </template>
+                    <tr x-show="rows.length === 0">
+                        <td colspan="7" class="text-center text-gray-400 py-4">No data available.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex items-center justify-between mt-4 text-sm">
+            <div>
+                Page <span x-text="currentPage"></span> of <span x-text="totalPages"></span>
+            </div>
+            <span x-text="`Sort by ${sortField} ${sortDirection}`"></span>
+            <div class="space-x-2">
+                <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
+                    class="cursor-pointer px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50  disabled:cursor-not-allowed">
+                    Prev
+                </button>
+                <template x-for="page in totalPages">
+                    <button @click="changePage(page)" x-text="page"
+                        :class="{'opacity-50 cursor-not-allowed': currentPage === page}"
+                        class="cursor-pointer px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"></button>
+                </template>
+                <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
+                    class="cursor-pointer px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Next
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    $(document).ready(function () {
-        $('#productTable').DataTable({
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 25, 50],
-            "processing": true,
-            "serverSide": true,
-            "ajax": "{{ route('product.list.datatable') }}",
-            "columns": [
-                {
-                    "data": null,
-                    "orderable": false,
-                    "searchable": false,
-                    "render": function (data, type, row) {
-                        return `
-                        <button onclick="editProduct(${row.id})" type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 text-center inline-flex items-center me-2 mb-2">
-                            <i class="fas fa-edit mr-1"></i>edit
-                        </button>
-                        `;
-                    }
-                },
-                { "data": "id" },
-                { "data": "name" },
-                {
-                    "data": "price",
-                    "render": function (data, type, row) {
-                        return numberWithCommas(data);
-                    }
-                },
-                { "data": "stock" },
-                {
-                    "data": "image", "render": function (data, type, row) {
-                        return `
-                            <img src="/assets/images/products/${data}" alt="${row.name}" class="w-5 h-5 object-cover mx-auto" 
-                                onmouseover="this.style.width='100px'; this.style.height='100px';" 
-                                onmouseout="this.style.width='20px'; this.style.height='20px';">
-                        `;
-                    }
-                }
-            ]
-        });
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('datatableListProduct', initProducts().datatableListProduct());
     });
-
 </script>
+
+@include('products.section.add_product')
+@include('products.section.edit_product')
