@@ -16,8 +16,9 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->integer('qty');
             $table->decimal('unit_price', 12, 0);
-            $table->decimal('subtotal', 12, 0);
-            $table->timestamps();
+            $table->decimal('subtotal', 12, 0);          
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

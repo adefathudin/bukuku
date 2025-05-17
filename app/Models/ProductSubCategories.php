@@ -12,10 +12,6 @@ class ProductSubCategories extends Model
         'name',
         'description',
         'category_id',
+        'created_by',
     ];
-
-    public function productCategory()
-    {
-        return $this->belongsTo(ProductCategories::class, 'product_category_id');
-    }
 }

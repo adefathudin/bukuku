@@ -21,6 +21,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 3,
                 'stock' => 100,
                 'image' => 'sample-68252622a05af.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Coca-Cola',
@@ -30,6 +31,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 1,
                 'stock' => 200,
                 'image' => 'sample-6825267ebef34.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Pepsi',
@@ -39,6 +41,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 1,
                 'stock' => 150,
                 'image' => 'sample-682526afb2686.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Indomie Goreng',
@@ -48,6 +51,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 3,
                 'stock' => 300,
                 'image' => 'sample-682526e07ae86.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Nutella',
@@ -57,6 +61,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 3,
                 'stock' => 50,
                 'image' => 'sample-6825272902130.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Lifebuoy Sabun Mandi',
@@ -66,6 +71,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 5,
                 'stock' => 80,
                 'image' => 'sample-6825276ef3993.png',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Pond\'s Krim Wajah',
@@ -75,6 +81,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 5,
                 'stock' => 60,
                 'image' => 'sample-682527b2310dd.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'Sunsilk Shampoo',
@@ -84,6 +91,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 5,
                 'stock' => 70,
                 'image' => 'sample-682528115a01e.jpeg',
+                'created_by' => 1,
             ],
             [
                 'name' => 'L\'Oreal Makeup Foundation',
@@ -93,6 +101,7 @@ class ProductsSeeder extends Seeder
                 'sub_category_id' => 6,
                 'stock' => 40,
                 'image' => 'sample-6825284776eaa.jpeg',
+                'created_by' => 1,
             ],
         ]);
     }

@@ -1,5 +1,5 @@
 <div x-data="$store.datatableListProduct" x-init="$store.datatableListProduct.loadData()">
-    <div class="flex justify-between mb-2">
+    <div class="flex justify-between mb-4">
         <div class="flex items-center gap-2">
             <span class="w-full">Filter by:</span>
             <select
@@ -20,13 +20,13 @@
             </select>
 
         </div>
+        <h2 class="text-2xl font-bold dark:text-white">Products</h2>
         <div class="flex justify-end gap-2">
-            <button type="button" onclick="openModal('modalAddProduct')"
+            <button type="button" @click="$store.modalsProduct.open('add')"
                 class="text-gray-900 bg-white cursor-pointer hover:bg-gray-100 border border-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-sm text-sm px-2 text-center inline-flex items-center">Add
                 new
             </button>
-            <button type="button" x-on:click="setFilterStockOut()" :disabled="stockOutCount == 0"
-                :class="isStockOut ? 'text-red-500 bg-cyan-100' : ''"
+            <button type="button" @click="setFilterStockOut()" :class="isStockOut ? 'text-red-500 bg-cyan-100' : ''"
                 class="text-gray-900 bg-white cursor-pointer hover:bg-gray-100 border border-gray-500 focus:ring-4 focus:outline-none focus:ring-gray-100 rounded-sm text-sm px-2 text-center inline-flex items-center"
                 x-text="`Stock Out ${stockOutCount} items`">
             </button>
@@ -40,24 +40,22 @@
                     <tr class="text-gray-700">
                         <th class="px-4 py-2 cursor-pointer" @click="sortBy('id')">ID</th>
                         <th class=" px-4 py-2 cursor-pointer" @click="sortBy('name')">Product Name</th>
-                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('price')">Price</th>
+                        <th class="px-4 py-2 cursor-pointer text-right" @click="sortBy('price')">Price</th>
                         <th class="px-4 py-2 cursor-pointer" @click="sortBy('stock')">Stock</th>
                         <th class="px-4 py-2 cursor-pointer" @click="sortBy('category_name')">Category</th>
                         <th class="px-4 py-2 cursor-pointer" @click="sortBy('sub_category_name')">Subcategory</th>
-                        <th class="px-4 py-2 cursor-pointer" @click="sortBy('price')">Image</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="row in rows" :key="row.id">
                         <tr class="hover:bg-gray-200 hover:cursor-pointer odd:bg-white even:bg-gray-100"
-                            @click="$store.productModal.open(row.id)">
+                            @click="$store.modalsProduct.open('edit', row.id)">
                             <td class="px-4 py-2" x-text="row.id"></td>
                             <td class="px-4 py-2" x-text="row.name"></td>
-                            <td class="px-4 py-2" x-text="numberWithCommas(row.price)"></td>
+                            <td class="px-4 py-2 text-right" x-text="numberWithCommas(row.price)"></td>
                             <td class="px-4 py-2" x-text="row.stock"></td>
                             <td class="px-4 py-2" x-text="row.category_name"></td>
                             <td class="px-4 py-2" x-text="row.sub_category_name"></td>
-                            <td class="px-4 py-2"></td>
                         </tr>
                     </template>
                     <tr x-show="rows.length === 0">
@@ -97,5 +95,4 @@
     });
 </script>
 
-@include('products.section.add_product')
 @include('products.section.edit_product')

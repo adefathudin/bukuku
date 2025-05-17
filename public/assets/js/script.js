@@ -1,20 +1,3 @@
-function reloadDataTable(e) {
-    $('#' + e).DataTable().ajax.reload();
-}
-
-function filterDataTable(e, p) {
-    var table = $('#' + e).DataTable();
-    table.column(5).search('food').draw();
-}
-
-function openModal(e) {
-    document.getElementById(e).classList.remove('hidden');
-}
-
-function closeModal(e) {
-    document.getElementById(e).classList.add('hidden');
-}
-
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }

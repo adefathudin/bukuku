@@ -15,14 +15,17 @@ return new class extends Migration {
             $table->id();
             $table->string('name')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price', 8, 2);
+            $table->decimal('price', 12, 0);
             $table->integer('stock');
             $table->string('image')->nullable();
-            $table->timestamps();
-
-            // Foreign key constraint to product_categories table
-            $table->foreignId('category_id')->constrained('product_categories')->onDelete('cascade');
-            $table->foreignId('sub_category_id')->constrained('product_sub_categories')->onDelete('cascade');
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('product_categories')->onDelete('set null');    
+            $table->unsignedBigInteger('sub_category_id')->nullable();
+            $table->foreign('sub_category_id')->references('id')->on('product_sub_categories')->onDelete('set null');    
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');  
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
     /**

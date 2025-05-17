@@ -19,7 +19,7 @@ class TransactionsController extends BaseController
         // Create the transaction
         $transaction = Transactions::create([
             'receipt_number' => $request->input('receipt_number'),
-            'transaction_date' => $request->input('transaction_date'),
+            'transaction_date' => \Carbon\Carbon::createFromFormat('d/m/y, H.i.s', $request->input('transaction_date'))->format('Y-m-d H:i:s'),
             'total_price' => $request->input('total_price'),
             'user_id' => auth()->id(), // Assuming the user is authenticated
         ]);

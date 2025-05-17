@@ -12,20 +12,15 @@ class TransactionsSeeder extends Seeder
      */
     public function run(): void
     {
-        \DB::table('transactions')->insert([
-            ['receipt_number' => '1746866886', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-7 days')), 'total_price' => 1800000, 'user_id' => 1],
-            ['receipt_number' => '1746866887', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-6 days')), 'total_price' => 2000000, 'user_id' => 1],
-            ['receipt_number' => '1746866888', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-5 days')), 'total_price' => 1500000, 'user_id' => 1],
-            ['receipt_number' => '1746866889', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-4 days')), 'total_price' => 2500000, 'user_id' => 1],
-            ['receipt_number' => '1746866890', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-3 days')), 'total_price' => 3000000, 'user_id' => 1],
-            ['receipt_number' => '1746866898', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-2 days')), 'total_price' => 7000000, 'user_id' => 1],
-            ['receipt_number' => '1746866891', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-2 days')), 'total_price' => 3500000, 'user_id' => 1],
-            ['receipt_number' => '1746866892', 'transaction_date' => date('Y-m-d H:i:s', strtotime('-2 days')), 'total_price' => 4000000, 'user_id' => 1],
-            ['receipt_number' => '1746866894', 'transaction_date' => date('Y-m-d H:i:s'), 'total_price' => 5000000, 'user_id' => 1],
-            ['receipt_number' => '1746866896', 'transaction_date' => date('Y-m-d H:i:s'), 'total_price' => 6000000, 'user_id' => 1],
-            ['receipt_number' => '1746866895', 'transaction_date' => date('Y-m-d H:i:s'), 'total_price' => 5500000, 'user_id' => 1],
-            ['receipt_number' => '1746866897', 'transaction_date' => date('Y-m-d H:i:s'), 'total_price' => 6500000, 'user_id' => 1],
-            ['receipt_number' => '1746866899', 'transaction_date' => date('Y-m-d H:i:s'), 'total_price' => 7500000, 'user_id' => 1],
+        \DB::table('transactions')->insert([            
+        ['receipt_number' => 2424242424, 'transaction_date' => date('Y-m-d H:i:s', strtotime('-30 days')), 'total_price' => 150000, 'created_by' => 1],
+        ['receipt_number' => 1010101010, 'transaction_date' => date('Y-m-d H:i:s', strtotime('-9 days')), 'total_price' => 75000, 'created_by' => 1],
+        ['receipt_number' => 6633442211, 'transaction_date' => date('Y-m-d H:i:s', strtotime('-6 days')), 'total_price' => 85000, 'created_by' => 1],
+        ['receipt_number' => 9988776653, 'transaction_date' => date('Y-m-d H:i:s', strtotime('-4 days')), 'total_price' => 310000, 'created_by' => 1],
+        ['receipt_number' => 9988776655, 'transaction_date' => date('Y-m-d H:i:s', strtotime('-2 days')), 'total_price' => 240000, 'created_by' => 1],
+        ['receipt_number' => 1122334455, 'transaction_date' => date('Y-m-d H:i:s', strtotime('-1 days')), 'total_price' => 140000, 'created_by' => 1],
+        ['receipt_number' => 8877665544, 'transaction_date' => date('Y-m-d H:i:s'), 'total_price' => 135000, 'created_by' => 1],
+
         ]);
     }
 }

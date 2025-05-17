@@ -6,13 +6,83 @@ use Illuminate\Http\Request;
 use App\Models\Products;
 use App\Models\Transactions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ReportsController extends BaseController
 {
     public function index()
     {
         return view('reports.index');
-    }// app/Http/Controllers/ProductController.php
+    }
+
+    public function dataTable(Request $request)
+    {
+        $transactions = Transactions::with(['details.product', 'user', 'details.product.category', 'details.product.sub_category']);
+        switch ($request->periode) {
+            case 'weekly':
+                $transactions = $transactions->whereBetween('transaction_date', [now()->subDays(28)->startOfDay(), now()->endOfDay()]);
+                break;
+
+            case 'monthly':
+                $transactions = $transactions->whereBetween('transaction_date', [now()->subMonths(6)->startOfMonth(), now()->endOfMonth()]);
+                break;
+            default:            
+                $transactions = $transactions->whereBetween('transaction_date', [now()->subDays(6)->startOfDay(), now()->endOfDay()]);
+                break;
+        }
+        if (!auth()->user()->hasRole('admin')){
+            $transactions = $transactions->where('created_by', auth()->user()->id);
+        }
+        
+         if ($request->receipt_number) {
+            $transactions->where('receipt_number', 'like', "%{$request->receipt_number}%");
+        }        
+
+        $summary = $transactions;
+        $summary = $summary->get();
+
+        $summary = [
+            'total_transaction' => $summary->count(),
+            'total_revenue' => number_format($summary->sum('total_price')),
+            'total_qty' => $summary->sum(function ($transaction) {
+                return $transaction->details->sum('qty');
+            }),
+        ];
+
+        $transactions = $transactions->orderBy('transaction_date', 'desc')->paginate(5);
+        
+        $transformed = $transactions->map(function ($transaction) {
+            return [
+                'id' => $transaction->id,
+                'receipt_number' => $transaction->receipt_number,
+                'transaction_date' => date('D, d M Y H:i:s', strtotime($transaction->transaction_date)),
+                'total_price' => $transaction->total_price,
+                'created_name' => $transaction->user->name,
+                'details' => $transaction->details->map(function ($detail) {
+                    return [
+                        'id' => $detail->id,
+                        'product_name' => $detail->product->name,
+                        'category_name' => $detail->product->category->name,
+                        'sub_category_name' => $detail->product->sub_category->name,
+                        'qty' => $detail->qty,
+                        'unit_price' => $detail->unit_price,
+                        'subtotal' => $detail->subtotal,
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformed,
+            'summary'=> $summary,
+            'current_page' => $transactions->currentPage(),
+            'last_page' => $transactions->lastPage(),
+            'per_page' => $transactions->perPage(),
+            'total' => $transactions->total()
+        ]);
+            
+        return response()->json($transactions);
+    }
 
     public function Chart($type, $filter, $range)
     {

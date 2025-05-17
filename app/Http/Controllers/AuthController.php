@@ -25,15 +25,22 @@ class AuthController extends Controller
         }
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
 
         $credentials = $request->only('email', 'password');
+        $credentials['active'] = true;
 
         if (Auth::attempt($credentials)) {
             return redirect()->route('home');
         }
 
         return back()->withErrors(['message' => 'Invalid credentials']);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return redirect()->route('login');
     }
 }

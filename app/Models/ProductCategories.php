@@ -11,10 +11,6 @@ class ProductCategories extends Model
     protected $fillable = [
         'name',
         'description',
+        'created_by',
     ];
-
-    public function productSubCategories()
-    {
-        return $this->hasMany(ProductSubCategories::class, 'product_category_id');
-    }
 }

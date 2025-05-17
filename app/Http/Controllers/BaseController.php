@@ -25,6 +25,7 @@ class BaseController extends Controller
                         'name' => 'Products',
                         'url' => '/products',
                         'icon' => 'fa fa-box',
+                        'access' => 'admin',
                     ],
                     [
                         'name' => 'Transaction',
@@ -37,8 +38,8 @@ class BaseController extends Controller
                         'icon' => 'fa fa-chart-bar',
                     ],
                     [
-                        'name' => 'Settings',
-                        'url' => '/settings',
+                        'name' => 'Users',
+                        'url' => '/users',
                         'icon' => 'fa fa-cog',
                     ],
                     [

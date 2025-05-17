@@ -19,7 +19,13 @@ class Products extends Model
         'sub_category_id',
         'stock',
         'image',
+        'created_by',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     public function category()
     {
@@ -29,5 +35,7 @@ class Products extends Model
     {
         return $this->belongsTo(ProductSubCategories::class, 'sub_category_id');
     }
+
+    
 
 }

@@ -1,105 +1,102 @@
 @include('_layouts.header')
 
-<div x-data="datatable()" x-init="loadData()" class="p-4">
-    <div class="mb-4 space-x-2">
-        <button @click="setCategory('All')" class="px-3 py-1 bg-gray-200 rounded">All</button>
-        <button @click="setCategory('Electronics')" class="px-3 py-1 bg-gray-200 rounded">Electronics</button>
-        <button @click="setCategory('Books')" class="px-3 py-1 bg-gray-200 rounded">Books</button>
-        <button @click="setCategory('Food')" class="px-3 py-1 bg-gray-200 rounded">Food</button>
-    </div>
-    <table class="min-w-full text-sm text-left border border-gray-300">
-        <thead class="bg-gray-100">
-            <tr>
-                <th @click="sortBy('name')" class="cursor-pointer px-2 py-1 border">Name</th>
-                <th @click="sortBy('category')" class="cursor-pointer px-2 py-1 border">Category</th>
-                <th @click="sortBy('price')" class="cursor-pointer px-2 py-1 border">Price</th>
-            </tr>
-            <tr>
-                <th><input x-model="filters.name" @input.debounce.500ms="loadData" class="w-full border px-1"></th>
-                <th><input x-model="filters.category" @input.debounce.500ms="loadData" class="w-full border px-1"></th>
-                <th><input x-model="filters.price" @input.debounce.500ms="loadData" class="w-full border px-1"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <template x-for="row in rows" :key="row.id">
-                <tr>
-                    <td class="border px-2 py-1" x-text="row.name"></td>
-                    <td class="border px-2 py-1" x-text="row.category"></td>
-                    <td class="border px-2 py-1" x-text="row.price"></td>
-                </tr>
-            </template>
-        </tbody>
-    </table>
+<script src="{{ asset('assets/js/reports.js') }}"></script>
 
-    <!-- Pagination -->
-    <div class="flex items-center gap-2 mt-4">
-        <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
-            class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Prev</button>
+<div x-data="initReports" x-init="onLoad">
+    <div class="flex-grow flex gap-2">
 
-        <template x-for="page in totalPages">
-            <button @click="changePage(page)" x-text="page" :class="{'bg-blue-500 text-white': currentPage === page}"
-                class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"></button>
-        </template>
+        <div class="overflow-auto w-full mb-4">
+            <div class="flex justify-between p-4 bg-white mb-2">
+                <div class="flex items-center gap-2 text-sm">
+                    <label>Periode:</label>
+                    <select @change="setPeriode($event.target.value)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="daily" selected>Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                <h2 class="text-2xl font-bold dark:text-white">Reports</h2>
+                <input type="text" x-model="search" placeholder="Search by receipt number"
+                    class="border border-gray-300 px-2 py-1 text-sm"
+                    @keyup.enter="searchTransaction($event.target.value)">
 
-        <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
-            class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Next</button>
+            </div>
+            <div class="bg-white">
+                <table class="min-w-full text-sm border border-gray-200">
+                    <thead class="font-bold bg-cyan-200">
+                        <td class="px-4 py-2">Product Name</td>
+                        <td class="px-4 py-2 text-right">QTY</td>
+                        <td class="px-4 py-2 text-right">Total</td>
+                    </thead>
+                    <template x-for="(row,index) in data.data" :key="index">
+                        <tbody>
+                            <tr>
+                                <td class="px-4 py-2 bg-gray-100" colspan="3"
+                                    x-text="`${row.receipt_number} - ${row.transaction_date} - ${row.created_name}`">
+                                </td>
+                            </tr>
+                            <template x-for="p in row.details" :key="p.id">
+                                <tr colspan="3">
+                                    <td class="px-4 py-2" x-text="p.product_name"></td>
+                                    <td class="px-4 py-2 text-right" x-text="p.qty"></td>
+                                    <td class="px-4 py-2 text-right" x-text="numberWithCommas(p.unit_price)"></td>
+                                </tr>
+                            </template>
+                            <tr class="bg-gray-100">
+                                <td class="px-4 py-2 font-semibold text-right" colspan="2">Sub Total</td>
+                                <td class="px-4 py-2 font-semibold text-right"
+                                    x-text="numberWithCommas(row.total_price)">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </table>
+            </div>
+            <div class="flex items-center justify-between text-sm p-2 my-4 bg-white">
+                <div>
+                    Page <span x-text="data.current_page"></span> of <span x-text="data.last_page"></span>
+                </div>
+                <div class="space-x-2">
+                    <button @click="changePage(data.current_page - 1)" :disabled="data.current_page === 1"
+                        class="cursor-pointer px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50  disabled:cursor-not-allowed">
+                        Prev
+                    </button>
+                    <template x-for="page in data.last_page">
+                        <button @click="changePage(page)" x-text="page"
+                            :class="{'opacity-50 cursor-not-allowed': data.current_page === page}"
+                            class="cursor-pointer px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"></button>
+                    </template>
+                    <button @click="changePage(data.current_page + 1)" :disabled="data.current_page === data.last_page"
+                        class="cursor-pointer px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="sticky top-2">
+                <div class="p-4 bg-white">
+                    <canvas x-ref="byPeriode" width="400" height="200"></canvas>
+                </div>
+                <div class="mt-4 space-y-2 bg-white p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">Total Transactions:</span>
+                        <span x-text="data.summary.total_transaction ?? 0" class="text-lg font-bold"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">Total Revenue:</span>
+                        <span x-text="data.summary.total_revenue ?? 0" class="text-lg font-bold"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">Total Products Sold:</span>
+                        <span x-text="data.summary.total_qty ?? 0" class="text-lg font-bold"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
-
-<script>
-    function datatable() {
-        return {
-            filters: { name: '', category: '', price: '' },
-            rows: [],
-            currentPage: 1,
-            totalPages: 1,
-            sortField: 'name',
-            sortDirection: 'asc',
-
-            loadData() {
-                const params = new URLSearchParams({
-                    name: this.filters.name,
-                    category: this.filters.category,
-                    price: this.filters.price,
-                    page: this.currentPage,
-                    sort: this.sortField,
-                    direction: this.sortDirection
-                });
-
-                fetch(`/api/reports/test?${params.toString()}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        this.rows = data.data;
-                        this.currentPage = data.current_page;
-                        this.totalPages = data.last_page;
-                    });
-            },
-
-            setCategory(value) {
-                this.filters.category = value === 'All' ? '' : value;
-                this.currentPage = 1;
-                this.loadData();
-            },
-
-            sortBy(field) {
-                if (this.sortField === field) {
-                    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-                } else {
-                    this.sortField = field;
-                    this.sortDirection = 'asc';
-                }
-                this.loadData();
-            },
-
-            changePage(page) {
-                if (page >= 1 && page <= this.totalPages) {
-                    this.currentPage = page;
-                    this.loadData();
-                }
-            }
-        }
-    }
-</script>
 
 
 @include('_layouts.footer')

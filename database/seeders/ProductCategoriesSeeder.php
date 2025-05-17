@@ -13,9 +13,9 @@ class ProductCategoriesSeeder extends Seeder
     public function run(): void
     {
         \DB::table('product_categories')->insert([
-            ['name' => 'Drinks', 'description' => 'Beverages and refreshments'],
-            ['name' => 'Food', 'description' => 'Groceries and food items'],
-            ['name' => 'Health & Beauty', 'description' => 'Health and beauty products'],
+            ['name' => 'Drinks', 'description' => 'Beverages and refreshments', 'created_by' => 1],
+            ['name' => 'Food', 'description' => 'Groceries and food items', 'created_by' => 1],
+            ['name' => 'Health & Beauty', 'description' => 'Health and beauty products', 'created_by' => 1],
         ]);
     }
 }

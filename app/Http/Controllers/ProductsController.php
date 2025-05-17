@@ -12,6 +12,17 @@ class ProductsController extends BaseController
 
     public function index()
     {
+        // $a = (Products::with('category')->with('sub_category')->get());
+        // $a = $a->map(function ($product) {
+        //     return [
+        //         'id' => $product->id,
+        //         'name' => $product->name,
+        //         'price' => $product->price,
+        //         'category_id' => $product->category_id,
+        //         'sub_category_id' => $product->sub_category_id,
+        //     ];
+        // });
+        // echo '<pre>';print_r($a);die;
         return view('products.index');
     }
 
@@ -22,7 +33,7 @@ class ProductsController extends BaseController
 
     public function listProductsDataTable(Request $request)
     {
-        $query = Products::with('category')->with('sub_category');
+        $query = Products::with(['category','sub_category']);
 
         if ($request->name) {
             $query->where('name', 'like', "%{$request->name}%");
@@ -118,9 +129,38 @@ class ProductsController extends BaseController
         }
     }
 
-    public function update(Request $request)
+    public function save(Request $request)
     {
         $product = Products::find($request->input('id'));
+
+        if (!$product) {$request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+            'category_id' => 'required|exists:product_categories,id',
+            'sub_category_id' => 'required|exists:product_sub_categories,id',
+            'image' => 'required|image|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $imageName = uniqid() . '.' . $request->file('image')->getClientOriginalExtension();
+            $imagePath = $request->file('image')->move(public_path('assets/images/products'), $imageName);
+        }
+
+        Products::create([
+            'name' => $request->input('name'),
+            'price' => $request->input('price'),
+            'stock' => $request->input('stock'),
+            'category_id' => $request->input('category_id'),
+            'sub_category_id' => $request->input('sub_category_id'),
+            'image' => $imageName ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product created successfully',
+        ]);
+        }
         
         if ($request->hasFile('image')) {
             $imageName = uniqid() . '.' . $request->file('image')->getClientOriginalExtension();
@@ -143,31 +183,6 @@ class ProductsController extends BaseController
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'image' => 'required|image|max:2048',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $imageName = uniqid() . '.' . $request->file('image')->getClientOriginalExtension();
-            $imagePath = $request->file('image')->move(public_path('assets/images/products'), $imageName);
-        }
-
-        Products::create([
-            'name' => $request->input('name'),
-            'price' => $request->input('price'),
-            'stock' => $request->input('stock'),
-            'image' => $imageName ?? null,
-        ]);
-
-        return response()->json([
-            'message' => 'Product created successfully',
-        ]);
-    }
     public function destroy(Request $request)
     {
         $product = Products::find($request->input('id'));

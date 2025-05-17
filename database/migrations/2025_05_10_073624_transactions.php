@@ -14,10 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->string('receipt_number')->unique();
             $table->dateTime('transaction_date')->nullable();
-            $table->decimal('total_price', 12, 2);
-            $table->unsignedBigInteger('user_id')->nullable(); // optional
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-            $table->timestamps();
+            $table->decimal('total_price', 12, 0);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');  
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

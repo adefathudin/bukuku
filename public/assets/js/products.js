@@ -2,8 +2,6 @@ function initProducts() {
   return {
     categories: [],
     sub_categories: [],
-    menus: ['Products', 'Category'],
-    activeMenu: 'Products',
 
     async init() {
       await this.getCategoriesApi();
@@ -109,7 +107,7 @@ function initProducts() {
         }
       }
     },
-    editProductModal() {
+    modalsProduct() {
       return {
         isOpen: false,
         product: {
@@ -128,25 +126,32 @@ function initProducts() {
         sub_category_id: '',
         previewUrl: '',
         responseMessage: false,
+        modalType: '',
 
-        open(productId) {
+        open(type, productId) {
+          this.modalType = type;
           this.isOpen = true;
-          fetch(`/api/product`, {
-            method: 'POST',
-            headers: {
-              'X-CSRF-TOKEN': csrf_token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: productId })
-          })
-            .then(res => res.json())
-            .then(data => {
-              this.product = { ...data };
-              this.category_id = data.category_id;
-              this.sub_category_id = data.sub_category_id;
-              this.sub_categories = initProducts().getSubCategories(this.product.category_id);
-              this.previewUrl = `/assets/images/products/${data.image}`;
-            });
+          if (type === 'edit') {
+            fetch(`/api/product`, {
+              method: 'POST',
+              headers: {
+                'X-CSRF-TOKEN': csrf_token,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ id: productId })
+            })
+              .then(res => res.json())
+              .then(data => {
+                this.product = { ...data };
+                this.category_id = data.category_id;
+                this.sub_category_id = data.sub_category_id;
+                this.sub_categories = initProducts().getSubCategories(this.product.category_id);
+                this.previewUrl = `/assets/images/products/${data.image}`;
+              });
+
+          } else if (type === 'add') {
+
+          }
         },
 
         close() {
@@ -173,8 +178,10 @@ function initProducts() {
         },
 
         setCategoryId(category_id) {
-          this.sub_categories = initProducts().getSubCategories(category_id);
+          let a = initProducts().getSubCategories(category_id);
+          this.sub_categories = a;
           this.product.category_id = category_id;
+          this.product.sub_category_id = a[0]?.id || '';
         },
 
         setSubCategoryId(sub_category_id) {
@@ -192,7 +199,7 @@ function initProducts() {
             formData.append('image', fileInput.files[0]);
           }
 
-          fetch(`/api/product/update`, {
+          fetch(`/api/product/save`, {
             method: 'POST',
             headers: {
               'X-CSRF-TOKEN': csrf_token

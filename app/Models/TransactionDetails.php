@@ -12,5 +12,11 @@ class TransactionDetails extends Model
         'qty',
         'unit_price',
         'subtotal',
+        'created_by',
     ];
+    
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_id');
+    }
 }
