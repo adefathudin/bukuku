@@ -16,8 +16,8 @@ Route::middleware(['role'])->group(function () {
     Route::delete('/product/delete', [ProductsController::class, 'destroy'])->name('product.delete');
     Route::post('/product/save', [ProductsController::class, 'save'])->name('product.save');
     Route::get('/product/categories', [ProductsController::class, 'getCategories'])->name('product.categories');
-    Route::get('/product/subcategories', [ProductsController::class, 'getSubCategories'])->name('product.subcategories');
-    Route::get('/product/subcategories/{categoryId}', [ProductsController::class, 'getSubCategories'])->name('product.subcategories');
+    Route::post('/product/categories/save', [ProductsController::class, 'saveCategories'])->name('product.categories.save');
+    Route::delete('/product/categories/delete', [ProductsController::class, 'deleteCategories'])->name('product.categories.delete');
 
     // Route::put('/product/update', [ProductsController::class, 'update'])->name('product.update');
     Route::post('/transaction/save', [TransactionsController::class, 'store'])->name('transaction.store');

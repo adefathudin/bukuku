@@ -42,17 +42,6 @@
                 </div>
                 <div class="py-1">
                     <div class="mr-2">
-                        <!-- <div class="w-44 grid grid-cols-4 gap-4 ml-4">
-                        <button x-on:click="updateCart(item, -1)"
-                            class="rounded-lg text-center py-1 text-white bg-blue-gray-600 hover:bg-blue-gray-700 hover:cursor-pointer focus:outline-none">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <input x-model.number="item.qty" type="text" disabled
-                            class="bg-white rounded-lg text-center shadow focus:outline-none focus:shadow-lg text-sm">
-                        <button x-on:click="updateCart(item, 1)"
-                            class="rounded-lg text-center py-1 text-white bg-blue-gray-600 hover:bg-blue-gray-700 hover:cursor-pointer focus:outline-none">
-                            <i class="fas fa-plus"></i>
-                        </button> -->
                         <button x-on:click="updateCart(item, -(item.qty))"
                             class="py-1 text-blue-gray-300 hover:text-pink-500 focus:outline-none hover:cursor-pointer">
                             <i class="fas fa-trash-alt hover:text-red-500"></i>

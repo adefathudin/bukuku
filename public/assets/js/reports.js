@@ -29,10 +29,12 @@ function initReports() {
             this.data = a;
         },
 
-        changePage(page) {
-            if (page >= 1 && page <= this.totalPages) {
+        async changePage(page) {
+            if (page >= 1 && page <= this.data.last_page) {
                 this.currentPage = page;
-                this.loadData();
+                let a = await this.datatableReports().loadData('', '', page);
+                console.log(a)
+                this.data = a;
             }
         },
 
@@ -92,71 +94,23 @@ function initReports() {
             } catch (error) {
                 console.error('Error fetching chart data for daily transactions:', error);
             }
-
-            // Fetch data for the Transaction by Category chart
-            // const byCategoryEl = this.$refs.byCategory;
-            // if (!byCategoryEl) {
-            //     console.error('By Category chart element not found');
-            //     return;
-            // }
-            // try {
-            //     const response = await fetch(`/api/reports/chart/transactions/category/daily`);
-            //     const result = await response.json();
-            //     new Chart(byCategoryEl, {
-            //         type: 'pie',
-            //         data: {
-            //             labels: result.labels,
-            //             datasets: [{
-            //                 data: result.data,
-            //                 backgroundColor: [
-            //                     'rgba(255, 99, 132, 0.2)',
-            //                     'rgba(54, 162, 235, 0.2)',
-            //                     'rgba(255, 206, 86, 0.2)',
-            //                     'rgba(75, 192, 192, 0.2)',
-            //                     'rgba(153, 102, 255, 0.2)',
-            //                     'rgba(255, 159, 64, 0.2)'
-            //                 ],
-            //                 borderColor: [
-            //                     'rgba(255, 99, 132, 1)',
-            //                     'rgba(54, 162, 235, 1)',
-            //                     'rgba(255, 206, 86, 1)',
-            //                     'rgba(75, 192, 192, 1)',
-            //                     'rgba(153, 102, 255, 1)',
-            //                     'rgba(255, 159, 64, 1)'
-            //                 ],
-            //                 borderWidth: 1
-            //             }]
-            //         },
-            //         options: {
-            //             responsive: true,
-            //             plugins: {
-            //                 legend: {
-            //                     display: true,
-            //                     position: 'top'
-            //                 }
-            //             }
-            //         }
-            //     });
-            // } catch (error) {
-            //     console.error('Error fetching chart data for category transactions:', error);
-            // }
         },
 
         datatableReports() {
             return {
-                filters: { name: '', category: '', price: '', sub_category: '' },
+                filters: { name: '', category: '', price: '' },
                 currentPage: 1,
                 totalPages: 1,
                 sortField: 'id',
                 sortDirection: 'asc',
                 stockOutCount: 0,
-                subCategories: [],
                 isStockOut: false,
 
-                async loadData(periode = '', receipt_number = '') {
+                async loadData(periode = '', receipt_number = '', page = 1) {
                     const params = new URLSearchParams({
                         periode: periode,
                         receipt_number: receipt_number,
+                        page: page,
                     });
                     const response = await fetch(`/api/reports/datatable?${params.toString()}`, {
                         method: 'GET',

@@ -16,7 +16,11 @@ Route::middleware([EnsureUserHasRole::class . ':admin,kasir'])->group(function (
     Route::get('/users', [UsersController::class, 'index']);
 });
 
-Route::get('/products', [ProductsController::class, 'index'])->middleware([EnsureUserHasRole::class . ':admin']);
+Route::middleware([EnsureUserHasRole::class . ':admin'])->group(function () {
+    Route::get('/products', [ProductsController::class, 'index']);
+    Route::get('/products/categories', [ProductsController::class, 'categories']);
+});
+
 Route::get('/', [AuthController::class, 'index']);
 Route::get('/login', function () { return view('auth.login');})->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');

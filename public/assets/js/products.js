@@ -1,11 +1,9 @@
 function initProducts() {
   return {
     categories: [],
-    sub_categories: [],
 
     async init() {
       await this.getCategoriesApi();
-      await this.getSubCategoriesApi();
     },
 
     async getCategoriesApi() {
@@ -18,45 +16,29 @@ function initProducts() {
       this.categories = JSON.parse(localStorage.getItem('pos_product_categories'));
     },
 
-    async getSubCategoriesApi() {
-      const response = await fetch('/api/product/subcategories');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      localStorage.setItem('pos_product_subcategories', JSON.stringify(await response.json()));
-    },
-
-    getSubCategories(categoryId) {
-      if (localStorage.getItem('pos_product_subcategories')) {
-        let subCategories = JSON.parse(localStorage.getItem('pos_product_subcategories'));
-        subCategories = subCategories.filter(sub => sub.category_id == categoryId);
-        this.sub_categories = subCategories;
-        return subCategories;
-      }
-    },
-
     datatableListProduct() {
       return {
-        filters: { name: '', category: '', price: '', sub_category: '' },
+        filters: { name: '', category: '', price: '' },
         rows: [],
         currentPage: 1,
         totalPages: 1,
         sortField: 'id',
         sortDirection: 'asc',
         stockOutCount: 0,
-        subCategories: [],
         isStockOut: false,
+        nonCategory: 0,
+        isNonCategory: false,
 
         loadData() {
           const params = new URLSearchParams({
             name: this.filters.name,
             category: this.filters.category,
-            sub_category: this.filters.sub_category,
             price: this.filters.price,
             page: this.currentPage,
             sort: this.sortField,
             direction: this.sortDirection,
-            stock_out: this.isStockOut
+            stock_out: this.isStockOut,
+            non_category: this.isNonCategory,
           });
 
           fetch(`/api/products-datatable?${params.toString()}`)
@@ -66,25 +48,24 @@ function initProducts() {
               this.currentPage = data.current_page;
               this.totalPages = data.last_page;
               this.stockOutCount = data.stock_out;
+              this.nonCategory = data.non_category;
             });
         },
 
         setCategory(text, value) {
-          this.subCategories = initProducts().getSubCategories(value);
           this.filters.category = !value ? '' : text;
-          this.filters.sub_category = !value ? '' : this.filters.sub_category;
-          this.currentPage = 1;
-          this.loadData();
-        },
-
-        setSubCategory(value) {
-          this.filters.sub_category = value === 'All' ? '' : value;
           this.currentPage = 1;
           this.loadData();
         },
 
         setFilterStockOut() {
           this.isStockOut = this.isStockOut === false ? true : false;
+          this.currentPage = 1;
+          this.loadData();
+        },
+
+        setFilterNonCategory() {
+          this.isNonCategory = this.isNonCategory === false ? true : false;
           this.currentPage = 1;
           this.loadData();
         },
@@ -117,13 +98,9 @@ function initProducts() {
           stock: '',
           category_id: '',
           category_name: '',
-          sub_category_id: '',
-          sub_category_name: '',
           image: '',
         },
-        sub_categories: [],
         category_id: '',
-        sub_category_id: '',
         previewUrl: '',
         responseMessage: false,
         modalType: '',
@@ -144,8 +121,6 @@ function initProducts() {
               .then(data => {
                 this.product = { ...data };
                 this.category_id = data.category_id;
-                this.sub_category_id = data.sub_category_id;
-                this.sub_categories = initProducts().getSubCategories(this.product.category_id);
                 this.previewUrl = `/assets/images/products/${data.image}`;
               });
 
@@ -157,11 +132,10 @@ function initProducts() {
         close() {
           this.isOpen = false;
           this.reset();
-          this.sub_categories = [];
         },
 
         reset() {
-          this.product = { id: '', name: '', price: '', stock: '', image: '', category_name: '', sub_category_name: '' };
+          this.product = { id: '', name: '', price: '', stock: '', image: '', category_name: '' };
           this.previewUrl = '';
           this.responseMessage = false;
         },
@@ -178,14 +152,7 @@ function initProducts() {
         },
 
         setCategoryId(category_id) {
-          let a = initProducts().getSubCategories(category_id);
-          this.sub_categories = a;
           this.product.category_id = category_id;
-          this.product.sub_category_id = a[0]?.id || '';
-        },
-
-        setSubCategoryId(sub_category_id) {
-          this.product.sub_category_id = sub_category_id;
         },
 
         submitForm() {
@@ -254,6 +221,82 @@ function initProducts() {
             });
         }
       };
+    },
+  }
+}
+
+function initCategories() {
+  return {
+    data: [],
+    editCategories: [],
+    async init() {
+      const response = await fetch(`/api/product/categories`);
+      const result = await response.json();
+      this.data = result;
+    },
+    editCategory(id) {
+      this.editCategories = this.data.find(user => user.id === id);
+    },
+
+    deleteCategory(id) {
+      showSweetAlert('dialog', 'Are you sure?', 'This category will be permanently deleted! And products with this category cannot be sold', 'warning', 'Yes, delete!', 'Cancel')
+        .then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/api/product/categories/delete`, {
+              method: 'DELETE',
+              headers: {
+                'X-CSRF-TOKEN': csrf_token,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ id: id })
+            })
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  Swal.fire('Deleted!', 'Category has been deleted.', 'success');
+                  this.editCategories = [];
+                  this.init();
+                } else {
+                  Swal.fire('Failed!', 'Failed to delete category.', 'error');
+                }
+              });
+          }
+        });
+    },
+
+    submitForm() {
+      const formData = new FormData();
+      formData.append('id', this.editCategories.id);
+      formData.append('name', this.editCategories.name);
+      formData.append('description', this.editCategories.description);
+
+      fetch(`/api/product/categories/save`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-TOKEN': csrf_token
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              title: 'Success',
+              text: 'User updated successfully',
+              icon: 'success',
+            })
+            this.editCategories = [];
+            this.init();
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: data.message,
+              icon: 'error',
+            });
+          }
+        });
     }
+
+
   }
 }

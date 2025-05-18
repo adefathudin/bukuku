@@ -79,3 +79,7 @@
         </div>
     </div>
 </div>
+
+<script>
+    let csrf_token = `{{ csrf_token() }}`;
+</script>

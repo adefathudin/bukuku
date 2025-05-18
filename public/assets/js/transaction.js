@@ -140,6 +140,7 @@ function initApp() {
       const response = await fetch('http://localhost:8000/api/transaction/save', {
         method: 'POST',
         headers: {
+          'X-CSRF-TOKEN': csrf_token,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(transaction),

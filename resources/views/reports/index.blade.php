@@ -82,15 +82,15 @@
                 <div class="mt-4 space-y-2 bg-white p-4">
                     <div class="flex items-center justify-between">
                         <span class="font-semibold">Total Transactions:</span>
-                        <span x-text="data.summary.total_transaction ?? 0" class="text-lg font-bold"></span>
+                        <span x-text="data?.summary?.total_transaction ?? 0" class="text-lg font-bold"></span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="font-semibold">Total Revenue:</span>
-                        <span x-text="data.summary.total_revenue ?? 0" class="text-lg font-bold"></span>
+                        <span x-text="data?.summary?.total_revenue ?? 0" class="text-lg font-bold"></span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="font-semibold">Total Products Sold:</span>
-                        <span x-text="data.summary.total_qty ?? 0" class="text-lg font-bold"></span>
+                        <span x-text="data?.summary?.total_qty ?? 0" class="text-lg font-bold"></span>
                     </div>
                 </div>
             </div>

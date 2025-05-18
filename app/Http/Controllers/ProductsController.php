@@ -6,34 +6,29 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use App\Models\Products;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductCategories;
 
 class ProductsController extends BaseController
 {
 
     public function index()
     {
-        // $a = (Products::with('category')->with('sub_category')->get());
-        // $a = $a->map(function ($product) {
-        //     return [
-        //         'id' => $product->id,
-        //         'name' => $product->name,
-        //         'price' => $product->price,
-        //         'category_id' => $product->category_id,
-        //         'sub_category_id' => $product->sub_category_id,
-        //     ];
-        // });
-        // echo '<pre>';print_r($a);die;
         return view('products.index');
     }
 
+    public function categories()
+    {
+        return view('products.section.categories');
+    }
+
     public function listProductsTransaction(){
-        $products = Products::with('category')->with('sub_category')->get();
+        $products = Products::with('category')->whereNotNull('category_id')->get();
         return response()->json($products);
     }
 
     public function listProductsDataTable(Request $request)
     {
-        $query = Products::with(['category','sub_category']);
+        $query = Products::with(['category']);
 
         if ($request->name) {
             $query->where('name', 'like', "%{$request->name}%");
@@ -42,11 +37,6 @@ class ProductsController extends BaseController
         if ($request->category) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->category}%");
-            });
-        }
-        if ($request->sub_category) {
-            $query->whereHas('sub_category', function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->sub_category}%");
             });
         }
 
@@ -59,18 +49,16 @@ class ProductsController extends BaseController
                 $query->join('product_categories', 'products.category_id', '=', 'product_categories.id')
                     ->orderBy('product_categories.name', $request->direction)
                     ->select('products.*');
-            } elseif ($request->sort === 'sub_category_name') {
-                $query->join('product_sub_categories', 'products.sub_category_id', '=', 'product_sub_categories.id')
-                    ->orderBy('product_sub_categories.name', $request->direction)
-                    ->select('products.*');
             } else {
                 $query->orderBy($request->sort, $request->direction);
             }
         }
-
         $query2 = $query->clone();
         $stockOut = $query2->where('stock', '<=', 0)->count();
 
+        if ($request->has('non_category') && $request->non_category == 'true') {
+            $query->whereNull('category_id');
+        }
 
         if ($request->stock_out && $request->stock_out == 'true') {
             $query->where('stock', '<=', 0);
@@ -86,7 +74,6 @@ class ProductsController extends BaseController
                 'name' => $product->name,
                 'stock' => $product->stock,
                 'image' => $product->image,
-                'sub_category_name' => $product->sub_category->name ?? '',
                 'category_name' => $product->category->name ?? '',
                 'price' => $product->price,
             ];
@@ -99,6 +86,7 @@ class ProductsController extends BaseController
             'per_page' => $dataTable->perPage(),
             'total' => $dataTable->total(),
             'stock_out' => $stockOut,
+            'non_category' => $query->whereNull('category_id')->count(),
         ]);
 
     }
@@ -106,7 +94,7 @@ class ProductsController extends BaseController
     public function showById(Request $request)
     {
         $id = $request->input('id');
-        $product = Products::with(['category:id,name', 'sub_category:id,name'])->find($id);
+        $product = Products::with(['category:id,name'])->find($id);
 
         $product = [
             'id' => $product->id,
@@ -114,8 +102,6 @@ class ProductsController extends BaseController
             'stock' => $product->stock,
             'image' => $product->image,
             'category_id' => $product->category->id ?? '',
-            'sub_category_id' => $product->sub_category->id ?? '',
-            'sub_category_name' => $product->sub_category->name ?? '',
             'category_name' => $product->category->name ?? '',
             'price' => $product->price,
         ];
@@ -138,7 +124,6 @@ class ProductsController extends BaseController
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'category_id' => 'required|exists:product_categories,id',
-            'sub_category_id' => 'required|exists:product_sub_categories,id',
             'image' => 'required|image|max:2048',
         ]);
 
@@ -152,7 +137,6 @@ class ProductsController extends BaseController
             'price' => $request->input('price'),
             'stock' => $request->input('stock'),
             'category_id' => $request->input('category_id'),
-            'sub_category_id' => $request->input('sub_category_id'),
             'image' => $imageName ?? null,
         ]);
 
@@ -175,7 +159,6 @@ class ProductsController extends BaseController
         $product->price = $request->input('price');
         $product->stock = $request->input('stock');
         $product->category_id = $request->input('category_id');
-        $product->sub_category_id = $request->input('sub_category_id');
         $product->save();
 
         return response()->json([
@@ -201,17 +184,30 @@ class ProductsController extends BaseController
 
     public function getCategories()
     {
-        $categories = DB::table('product_categories')->get();
+        $categories = ProductCategories::get();
         return response()->json($categories);
     }
-    public function getSubCategories($categoryId = null)
+
+    public function saveCategories(Request $request)
     {
-        $subCategories = DB::table('product_sub_categories');
-        if ($categoryId) {
-            $subCategories->where('category_id', $categoryId);
+        $save = ProductCategories::find($request->id);
+        if ($save) {
+            $save->update($request->all());
+        } else {
+            $save = ProductCategories::create($request->all());
         }
 
-        return response()->json($subCategories->get());
+        return response()->json([
+            'success' => true,
+        ]);
     }
 
+    public function deleteCategories(Request $request)
+    {
+        $id = $request->json('id');
+        ProductCategories::where('id', $id)->delete();
+        return response()->json([
+            'success' => true,
+        ]);
+    }
 }

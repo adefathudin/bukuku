@@ -16,15 +16,13 @@ class TransactionsController extends BaseController
 
     public function store(Request $request)
     {
-        // Create the transaction
         $transaction = Transactions::create([
             'receipt_number' => $request->input('receipt_number'),
             'transaction_date' => \Carbon\Carbon::createFromFormat('d/m/y, H.i.s', $request->input('transaction_date'))->format('Y-m-d H:i:s'),
             'total_price' => $request->input('total_price'),
-            'user_id' => auth()->id(), // Assuming the user is authenticated
+            'created_by' => auth()->id(),
         ]);
 
-        // Insert transaction details
         foreach ($request->input('items') as $product) {
             $transaction->details()->create([
                 'product_id' => $product['product_id'],
@@ -34,7 +32,6 @@ class TransactionsController extends BaseController
             ]);
         }
 
-        // Update stock in the products table
         foreach ($request->input('items') as $product) {
             $productModel = Products::find($product['product_id']);
             if ($productModel) {

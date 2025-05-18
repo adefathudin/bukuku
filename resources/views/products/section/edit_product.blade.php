@@ -35,18 +35,6 @@
                     </select>
                 </div>
 
-                <div x-show="sub_categories.length > 0">
-                    <label class="block text-sm font-medium text-gray-700">Sub Category</label>
-                    <select name="sub_category_id" x-model="product.sub_category_id"
-                        class="mt-1 w-full rounded-md focus:ring-cyan-500 focus:border-cyan-500"
-                        x-on:change="setSubCategoryId($event.target.value)">
-                        <template x-for="sub in sub_categories" :key="sub.id">
-                            <option x-bind:value="sub.id" x-text="sub.name" :selected="sub.id === sub_category_id">
-                            </option>
-                        </template>
-                    </select>
-                </div>
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Product Image</label>
                     <input type="file" x-ref="imageInput" @change="previewImage($event)" accept="image/*" class="mt-1 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4

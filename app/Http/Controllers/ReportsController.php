@@ -17,7 +17,7 @@ class ReportsController extends BaseController
 
     public function dataTable(Request $request)
     {
-        $transactions = Transactions::with(['details.product', 'user', 'details.product.category', 'details.product.sub_category']);
+        $transactions = Transactions::with(['details.product', 'user', 'details.product.category']);
         switch ($request->periode) {
             case 'weekly':
                 $transactions = $transactions->whereBetween('transaction_date', [now()->subDays(28)->startOfDay(), now()->endOfDay()]);
@@ -39,7 +39,7 @@ class ReportsController extends BaseController
         }        
 
         $summary = $transactions;
-        $summary = $summary->get();
+        $summary = $summary->orderBy('id','desc')->get();
 
         $summary = [
             'total_transaction' => $summary->count(),
@@ -49,7 +49,7 @@ class ReportsController extends BaseController
             }),
         ];
 
-        $transactions = $transactions->orderBy('transaction_date', 'desc')->paginate(5);
+        $transactions = $transactions->orderBy('id', 'desc')->paginate(5);
         
         $transformed = $transactions->map(function ($transaction) {
             return [
@@ -62,8 +62,7 @@ class ReportsController extends BaseController
                     return [
                         'id' => $detail->id,
                         'product_name' => $detail->product->name,
-                        'category_name' => $detail->product->category->name,
-                        'sub_category_name' => $detail->product->sub_category->name,
+                        'category_name' => $detail->product->category->name ?? 'non category',
                         'qty' => $detail->qty,
                         'unit_price' => $detail->unit_price,
                         'subtotal' => $detail->subtotal,
@@ -197,8 +196,9 @@ class ReportsController extends BaseController
         $transactions = DB::table('transactions')
             ->join('transaction_details', 'transactions.id', '=', 'transaction_details.transaction_id')
             ->join('products', 'transaction_details.product_id', '=', 'products.id')
-            ->join('product_sub_categories', 'products.sub_category_id', '=', 'product_sub_categories.id')
-            ->select('product_sub_categories.name as label', DB::raw('COUNT(*) as total'));
+            ->join('product_categories', 'products.category_id', '=', 'product_categories.id')
+            ->select('product_categories.name as label', DB::raw('COUNT(*) as total'));
+
         switch ($range) {
             case 'daily':
                 $transactions->whereBetween('transactions.transaction_date', [now()->subDays(6)->startOfDay(), now()->endOfDay()]);
@@ -210,7 +210,8 @@ class ReportsController extends BaseController
                 $transactions->whereBetween('transactions.transaction_date', [now()->subMonths(6)->startOfMonth(), now()->endOfMonth()]);
                 break;
         }
-        $transactions->groupBy('product_sub_categories.name')->orderBy('product_sub_categories.name')->get();
+
+        $transactions = $transactions->groupBy('product_categories.name')->orderBy('product_categories.name')->get();
         $labels = $transactions->pluck('label')->toArray();
         $data = $transactions->pluck('total')->toArray();
         $data = ['labels' => $labels, 'data' => $data];
