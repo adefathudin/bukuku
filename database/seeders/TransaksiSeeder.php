@@ -19,6 +19,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 150000,
                 'tanggal' => date('Y-m-d H:i:s', strtotime('-30 days')),
                 'tipe' => 2,
+                'created_by' => 1,
             ],
             [
                 'kategori_id' => 2,
@@ -26,6 +27,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 75000,
                 'tanggal' => date('Y-m-d H:i:s', strtotime('-9 days')),
                 'tipe' => 2,
+                'created_by' => 1,
             ],
             [
                 'kategori_id' => 6,
@@ -33,6 +35,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 5000000,
                 'tanggal' => date('Y-m-d H:i:s', strtotime('-1 days')),
                 'tipe' => 1,
+                'created_by' => 1,
             ],
             [
                 'kategori_id' => 7,
@@ -40,6 +43,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 1000000,
                 'tanggal' => date('Y-m-d H:i:s'),
                 'tipe' => 1,
+                'created_by' => 1,
             ],
             [
                 'kategori_id' => 3,
@@ -47,6 +51,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 200000,
                 'tanggal' => date('Y-m-d H:i:s', strtotime('-2 days')),
                 'tipe' => 2,
+                'created_by' => 1,
             ],
             [
                 'kategori_id' => 4,
@@ -54,6 +59,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 300000,
                 'tanggal' => date('Y-m-d H:i:s', strtotime('-3 days')),
                 'tipe' => 2,
+                'created_by' => 1,
             ],
             [
                 'kategori_id' => 5,
@@ -61,6 +67,7 @@ class TransaksiSeeder extends Seeder
                 'jumlah' => 50000,
                 'tanggal' => date('Y-m-d H:i:s'),
                 'tipe' => 2,
+                'created_by' => 1,
             ],
         ]);
     }

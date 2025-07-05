@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('jumlah', 15, 0);
             $table->date('tanggal');
             $table->integer('tipe');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -13,9 +13,11 @@ class HomeController extends BaseController
     public function index()
     {
         $totalPemasukan = Transaksi::where('tipe', 1)
+            ->where('created_by', auth()->user()->id)
             ->sum('jumlah');
             
         $totalPengeluaran = Transaksi::where('tipe', 2)
+            ->where('created_by', auth()->user()->id)
             ->sum('jumlah');
             
         $data = (object) [

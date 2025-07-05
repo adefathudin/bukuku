@@ -54,9 +54,8 @@ class TransaksiController extends BaseController
                 $transactions = $transactions->whereBetween('tanggal', [now()->subDays(6)->startOfDay(), now()->endOfDay()]);
                 break;
         }
-        // if (!auth()->user()->hasRole('admin')){
-            $transactions = $transactions->where('created_by', auth()->user()->id);
-        // }
+
+        $transactions = $transactions->where('created_by', auth()->user()->id);
 
         if ($request->tipe AND $request->tipe != 'all') {
             $transactions->where('tipe', $request->tipe);
@@ -132,6 +131,7 @@ class TransaksiController extends BaseController
             )
                 ->where('tipe', 1)
                 ->whereBetween('tanggal', [now()->subDays(6)->startOfDay(), now()->endOfDay()])
+                ->where('created_by', auth()->user()->id)
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy(DB::raw('DATE(tanggal)'))
                 ->get();
@@ -142,6 +142,7 @@ class TransaksiController extends BaseController
             )
                 ->where('tipe', 2)
                 ->whereBetween('tanggal', [now()->subDays(6)->startOfDay(), now()->endOfDay()])
+                ->where('created_by', auth()->user()->id)
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy(DB::raw('DATE(tanggal)'))
                 ->get();
@@ -180,6 +181,7 @@ class TransaksiController extends BaseController
                 )
                     ->where('tipe', 1)
                     ->whereBetween('tanggal', [now()->subDays(28)->startOfDay(), now()->endOfDay()])
+                    ->where('created_by', auth()->user()->id)
                     ->groupBy(DB::raw('WEEK(tanggal)'))
                     ->orderBy(DB::raw('WEEK(tanggal)'))
                     ->get();
@@ -190,6 +192,7 @@ class TransaksiController extends BaseController
                 )
                     ->where('tipe', 2)
                     ->whereBetween('tanggal', [now()->subDays(28)->startOfDay(), now()->endOfDay()])
+                    ->where('created_by', auth()->user()->id)
                     ->groupBy(DB::raw('WEEK(tanggal)'))
                     ->orderBy(DB::raw('WEEK(tanggal)'))
                     ->get();
@@ -227,7 +230,8 @@ class TransaksiController extends BaseController
                     DB::raw('SUM(jumlah) as jumlah')
                 )
                     ->where('tipe', 1)
-                    ->whereBetween('tanggal', [now()->subMonths(6)->startOfMonth(), now()->endOfMonth()])
+                    ->whereBetween('tanggal', [now()->subMonths(6)->startOfMonth(), now()->endOfMonth()])                    
+                    ->where('created_by', auth()->user()->id)
                     ->groupBy(DB::raw('DATE_FORMAT(tanggal, "%b")'))
                     ->orderBy(DB::raw('MIN(tanggal)'))
                     ->get();
@@ -237,7 +241,8 @@ class TransaksiController extends BaseController
                     DB::raw('SUM(jumlah) as jumlah')
                 )
                     ->where('tipe', 2)
-                    ->whereBetween('tanggal', [now()->subMonths(6)->startOfMonth(), now()->endOfMonth()])
+                    ->whereBetween('tanggal', [now()->subMonths(6)->startOfMonth(), now()->endOfMonth()])                    
+                    ->where('created_by', auth()->user()->id)
                     ->groupBy(DB::raw('DATE_FORMAT(tanggal, "%b")'))
                     ->orderBy(DB::raw('MIN(tanggal)'))
                     ->get();

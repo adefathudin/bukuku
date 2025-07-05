@@ -13,7 +13,8 @@ class Transaksi extends Model
         'tanggal',
         'jumlah',
         'deskripsi',
-        'tipe'
+        'tipe',
+        'created_by'
     ];
 
     public function kategori()
