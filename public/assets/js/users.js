@@ -14,7 +14,7 @@ function initUsers() {
             this.data = result;
         },
         editUser(id) {
-            this.editUserData = this.data.find(user => user.id === id);
+            this.editUserData = { ...this.data.find(user => user.id === id) };
         },
 
         submitForm() {

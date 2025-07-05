@@ -2,28 +2,20 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\TransactionsController;
-use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\KategoriController;
 
 Route::middleware(['role'])->group(function () {
-    Route::get('/products', [ProductsController::class, 'list'])->name('product.list');
-    Route::get('/products-datatable', [ProductsController::class, 'listProductsDataTable'])->name('product.list.datatable');
-    Route::get('/products-transaction', [ProductsController::class, 'listProductsTransaction'])->name('product.list.transaction');
-    Route::post('/product', [ProductsController::class, 'showById'])->name('product.show');
-    // Route::post('/product/save', [ProductsController::class, 'store'])->name('product.store');
-    Route::delete('/product/delete', [ProductsController::class, 'destroy'])->name('product.delete');
-    Route::post('/product/save', [ProductsController::class, 'save'])->name('product.save');
-    Route::get('/product/categories', [ProductsController::class, 'getCategories'])->name('product.categories');
-    Route::post('/product/categories/save', [ProductsController::class, 'saveCategories'])->name('product.categories.save');
-    Route::delete('/product/categories/delete', [ProductsController::class, 'deleteCategories'])->name('product.categories.delete');
 
-    // Route::put('/product/update', [ProductsController::class, 'update'])->name('product.update');
-    Route::post('/transaction/save', [TransactionsController::class, 'store'])->name('transaction.store');
-
-    Route::get('/reports/datatable', [ReportsController::class, 'dataTable'])->name('transaction.list.datatable');
-    Route::get('/reports/chart/{type}/{filter}/{range}', [ReportsController::class, 'chart'])->name('reports.chart');
+    Route::get('/kategori', [KategoriController::class, 'list'])->name('kategori.list');
+    Route::get('/transaksi/datatable', [TransaksiController::class, 'dataTable'])->name('transaksi.list.datatable');
+    Route::get('/transaksi/chart/{tipe}/{filter}', [TransaksiController::class, 'chart'])->name('transaksi.chart');
+    Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::delete('/transaksi/{id}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
+    Route::get('/kategori/{id}', [KategoriController::class, 'edit'])->name('kategori.edit');
+    Route::post('/kategori', [KategoriController::class, 'save'])->name('kategori.save');
+    Route::delete('/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 
     Route::get('/users', [UsersController::class, 'list'])->name('users.list');
     Route::post('/users/save', [UsersController::class, 'save'])->name('users.save');

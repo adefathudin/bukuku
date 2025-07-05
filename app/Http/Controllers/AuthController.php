@@ -6,16 +6,16 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
-    }
-
     public function index()
     {
-        return view('auth.login');
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        return redirect()->route('home');
+        
     }
 
     public function login(Request $request)
@@ -29,7 +29,7 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only('email', 'password');
-        $credentials['active'] = true;
+        $credentials['active'] = 'Y';
 
         if (Auth::attempt($credentials)) {
             return redirect()->route('home');

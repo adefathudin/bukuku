@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Products;
-use App\Models\Transactions;
+use App\Models\Transaksi;
 use App\Http\Controllers\BaseController;
 
 class HomeController extends BaseController
@@ -12,12 +12,18 @@ class HomeController extends BaseController
 
     public function index()
     {
+        $totalPemasukan = Transaksi::where('tipe', 1)
+            ->sum('jumlah');
+            
+        $totalPengeluaran = Transaksi::where('tipe', 2)
+            ->sum('jumlah');
+            
         $data = (object) [
-            'totalTransactions' => Transactions::count(),
-            'totalProducts' => Products::count(),
-            'totalRevenue' => Transactions::sum('total_price'),
-            'totalOutOfStock' => Products::where('stock', 0)->count(),
+            'totalPemasukan' => $totalPemasukan,
+            'totalPengeluaran' => $totalPengeluaran,
+            'saldoAkhir' => $totalPemasukan - $totalPengeluaran,
+            'status' => $totalPemasukan - $totalPengeluaran >= 0 ? true : false,
         ];
-        return view('home.index', ['data' => $data]);
+        return view('index', ['template' => 'home.index', 'data' => $data]);
     }
 }

@@ -9,7 +9,7 @@ class UsersController extends BaseController
 {
     public function index()
     {
-        return view('users.index');
+        return view('index', ['template' => 'users.index']);
     }
 
     public function list()

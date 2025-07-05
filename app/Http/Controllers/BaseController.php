@@ -18,35 +18,25 @@ class BaseController extends Controller
             'menu' => [
                     [
                         'name' => 'Dashboard',
-                        'url' => '/home',
+                        'url' => '/',
                         'icon' => 'fa fa-home',
                     ],
                     [
-                        'name' => 'Products',
-                        'url' => '/products',
-                        'icon' => 'fa fa-box',
+                        'name' => 'Kategori',
+                        'url' => '/kategori',
+                        'icon' => 'fa fa-table-columns',
+                    ],
+                    [
+                        'name' => 'Laporan',
+                        'url' => '/transaksi',
+                        'icon' => 'fa fa-chart-pie',
                         'access' => 'admin',
-                    ],
-                    [
-                        'name' => 'Transaction',
-                        'url' => '/transaction',
-                        'icon' => 'fa fa-cash-register',
-                    ],
-                    [
-                        'name' => 'Reports',
-                        'url' => '/reports',
-                        'icon' => 'fa fa-chart-bar',
                     ],
                     [
                         'name' => 'Users',
                         'url' => '/users',
                         'icon' => 'fa fa-cog',
-                    ],
-                    [
-                        'name' => 'Logout',
-                        'url' => '/logout',
-                        'icon' => 'fa fa-sign-out-alt',
-                    ],
+                    ]
                 ],
         ];
 

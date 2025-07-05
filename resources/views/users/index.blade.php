@@ -21,7 +21,7 @@
                             <td class="px-4 py-2" x-text="row.name"></td>
                             <td class="px-4 py-2" x-text="row.email"></td>
                             <td class="px-4 py-2" x-text="row.role"></td>
-                            <td class="px-4 py-2" x-text="row.active ? 'active' : 'nonactive'"></td>
+                            <td class="px-4 py-2" x-text="row.active"></td>
                         </tr>
                     </tbody>
                 </template>
@@ -53,8 +53,8 @@
                     <label class="block mb-1 font-medium">Status</label>
                     @if(auth()->user()->role === 'admin')
                     <select x-model="editUserData.active" class="w-full border px-3 py-2" required>
-                        <option :value="true">Active</option>
-                        <option :value="false">Nonactive</option>
+                        <option value="Y">Active</option>
+                        <option value="N">Nonactive</option>
                     </select>
                     @else
                     <input type="text" x-model="editUserData.active ? 'active' : ''"

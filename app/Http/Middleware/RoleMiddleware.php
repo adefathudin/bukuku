@@ -20,7 +20,7 @@ class RoleMiddleware
             return redirect('/login');
         }
 
-        if (Auth::user()->active == false) {
+        if (Auth::user()->active == 'N') {
             return redirect('/login');
         }
 
