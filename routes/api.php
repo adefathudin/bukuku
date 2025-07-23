@@ -18,5 +18,6 @@ Route::middleware(['role'])->group(function () {
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 
     Route::get('/users', [UsersController::class, 'list'])->name('users.list');
+    Route::get('/users/detail', [UsersController::class, 'detail'])->name('users.detail');
     Route::post('/users/save', [UsersController::class, 'save'])->name('users.save');
 });

@@ -2,6 +2,7 @@ function initUsers() {
     return {
         data: [],
         editUserData: [],
+        editProfile: false,
         async init() {
             const response = await fetch(`/api/users`, {
                 method: 'GET',
@@ -13,8 +14,33 @@ function initUsers() {
             const result = await response.json();
             this.data = result;
         },
+
+        async userDetails() {
+            const response = await fetch(`/api/users/detail`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const result = await response.json();
+            if (result.success) {
+                this.editUserData = result.data;
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: result.message,
+                    icon: 'error',
+                });
+            }
+        },
         editUser(id) {
             this.editUserData = { ...this.data.find(user => user.id === id) };
+        },
+
+        updateProfile() {
+            this.editProfile = true;
+            this.submitForm();
         },
 
         submitForm() {
@@ -42,7 +68,11 @@ function initUsers() {
                             icon: 'success',
                         })
                         this.editUserData = [];
-                        this.init();
+                        if (!this.editProfile) {
+                            this.init();
+                        } else {
+                            this.userDetails();
+                        }
                     } else {
                         Swal.fire({
                             title: 'Error',

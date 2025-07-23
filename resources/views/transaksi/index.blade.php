@@ -40,6 +40,11 @@
                         <td class="px-4 py-2">Deskripsi</td>
                         <td class="px-4 py-2 text-right">Jumlah</td>
                     </thead>
+                    <tbody x-show="!data.transaksi || Object.keys(data.transaksi).length === 0">
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-gray-500">No data available</td>
+                        </tr>
+                    </tbody>
                     <template x-for="(row,index) in data.transaksi" :key="index">
                         <tbody>
                             <tr>

@@ -36,6 +36,7 @@ class BaseController extends Controller
                         'name' => 'Users',
                         'url' => '/users',
                         'icon' => 'fa fa-cog',
+                        'role' => ['admin'],
                     ]
                 ],
         ];

@@ -36,4 +36,23 @@ class UsersController extends BaseController
             'success' => true
         ]);
     }
+
+    public function detail()
+    {
+        $user = User::find(auth()->user()->id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        return response()->json(['success' => true, 'data' => $user]);
+    }
+
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('index', [
+            'template' => 'users.profile',
+            'user' => $user
+        ]);
+    }
 }
