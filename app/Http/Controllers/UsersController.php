@@ -12,12 +12,21 @@ class UsersController extends BaseController
         return view('index', ['template' => 'users.index']);
     }
 
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('index', [
+            'template' => 'users.profile',
+            'user' => $user
+        ]);
+    }
+
     public function list()
     {
         if (auth()->user()->role != 'admin') {
             $users = User::where('id', auth()->user()->id)->get();
         } else {
-            $users = User::all();
+            $users = User::where('id', '!=', auth()->user()->id)->get();
         }
         
         return response()->json($users);
@@ -29,6 +38,9 @@ class UsersController extends BaseController
         if ($user) {
             $user->update($request->all());
         } else {
+            if (User::where('email', $request->email)->exists()) {
+                return response()->json(['error' => 'Email already exists'], 409);
+            }
             $user = User::create($request->all());
         }
         
@@ -47,12 +59,20 @@ class UsersController extends BaseController
         return response()->json(['success' => true, 'data' => $user]);
     }
 
-    public function profile()
+    public function delete(Request $request)
     {
-        $user = auth()->user();
-        return view('index', [
-            'template' => 'users.profile',
-            'user' => $user
-        ]);
+        if (auth()->user()->role != 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        if (!$request->id) {
+            return response()->json(['error' => 'User ID is required'], 400);
+        }
+        $user = User::find($request->id);
+        if ($user) {
+            $user->delete();
+            return response()->json(['success' => true]);
+        }
+        
+        return response()->json(['error' => 'User not found'], 404);
     }
 }

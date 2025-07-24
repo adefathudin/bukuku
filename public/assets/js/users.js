@@ -3,6 +3,10 @@ function initUsers() {
         data: [],
         editUserData: [],
         editProfile: false,
+        showForm: false,
+        editButton: false,
+        deleteButton: false,
+        formTitle: 'Add User',
         async init() {
             const response = await fetch(`/api/users`, {
                 method: 'GET',
@@ -34,8 +38,19 @@ function initUsers() {
                 });
             }
         },
-        editUser(id) {
+        selectUser(id) {
+
+            if (id === this.editUserData.id) {
+                this.editUserData = [];
+                this.editButton = false;
+                this.deleteButton = false;
+                return;
+            }
+
             this.editUserData = { ...this.data.find(user => user.id === id) };
+            this.showForm = false;
+            this.editButton = true;
+            this.deleteButton = true;
         },
 
         updateProfile() {
@@ -76,13 +91,88 @@ function initUsers() {
                     } else {
                         Swal.fire({
                             title: 'Error',
-                            text: data.message,
+                            text: data.error,
                             icon: 'error',
                         });
                     }
                 });
-        }
+        },
 
+        addUser() {
+            this.editUserData = {
+                id: null,
+                name: '',
+                email: '',
+                role: 'user',
+                active: 'Y',
+                password: ''
+            };
+            this.showForm = true;
+            this.formTitle = 'Add User';
+            this._validateUserData();
+        },
+
+        editUser() {
+            this._validateUserData();
+            if (this.editUserData.id) {
+                this.showForm = true;
+                this.formTitle = 'Edit User';
+            }
+        },
+
+        deleteUser() {
+            this._validateUserData();
+            if (this.editUserData.id) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/api/users/delete/${this.editUserData.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrf_token
+                            }
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        'User has been deleted.',
+                                        'success'
+                                    );
+                                    this.init();
+                                    this.editUserData = [];
+                                    this._validateUserData();
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: data.message,
+                                        icon: 'error',
+                                    });
+                                }
+                            });
+                    }
+                });
+            }
+        },
+
+        _validateUserData() {
+            if (!this.editUserData.id) {
+                this.editButton = false;
+                this.deleteButton = false;
+            } else {
+                this.editButton = true;
+                this.deleteButton = true;
+            }
+
+        }
 
     }
 }
