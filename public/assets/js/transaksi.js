@@ -187,6 +187,13 @@ function initReports() {
                     })
                         .then(response => response.json())
                         .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: data.message,
+                                    icon: 'success',
+                                })
+                            }
                             Alpine.store('initReports').onLoad();
                             this.reset();
                             this.close();
@@ -222,6 +229,13 @@ function initReports() {
                         })
                             .then(response => response.json())
                             .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Success',
+                                        text: data.message,
+                                        icon: 'success',
+                                    })
+                                }
                                 Alpine.store('initReports').onLoad();
                                 this.reset();
                                 this.close();

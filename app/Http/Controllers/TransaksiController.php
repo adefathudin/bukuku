@@ -24,10 +24,11 @@ class TransaksiController extends BaseController
             'jumlah' => $request->input('jumlah'),
             'deskripsi' => $request->input('deskripsi'),
             'tipe' => $request->input('tipe') ?? 1,
+            'created_by' => auth()->user()->id,
             ]
         );
 
-        return response()->json(['message' => 'Transaksi berhasil disimpan', 'transaksi' => $transaksi], 201);
+        return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan'], 200);
     }
 
     public function destroy($id)
@@ -35,7 +36,7 @@ class TransaksiController extends BaseController
         $transaksi = Transaksi::findOrFail($id);
         $transaksi->delete();
 
-        return response()->json(['message' => 'Transaksi berhasil dihapus'], 200);
+        return response()->json(['success' => true, 'message' => 'Transaksi berhasil dihapus'], 200);
     }
     
     public function dataTable(Request $request)
